@@ -13,7 +13,11 @@
     "react-router-dom": "^4.3.1"
   },
   "devDependencies": {
-    "react-scripts": "2.1.1"
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.7.0",
+    "enzyme-to-json": "^3.3.4",
+    "react-scripts": "2.1.1",
+    "react-test-renderer": "^16.6.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -29,5 +33,10 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "jest": {
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
+  }
 }

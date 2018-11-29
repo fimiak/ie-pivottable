@@ -11,7 +11,7 @@
 button {
   background: none;
   border: 0;
-  padding: 10px 10px;
+  padding: 0;
   outline: none;
 }
 
@@ -153,8 +153,8 @@ button.active {
 
 .table-button {
   border-left: 1px solid #ccc;
-  float: right;
   font-size: 12px;
+  padding: 10px;
 }
 
 .table-button:hover {
@@ -167,7 +167,8 @@ button.active {
 
 .click-menu {
   background: #fff;
-  border: 1px solid #ccc;
+  border: 1px solid #bbb;
+  border-radius: 3px;
   cursor: default;
   display: none;
   flex-direction: column;
@@ -176,14 +177,18 @@ button.active {
   margin: 0;
   position: absolute;
   width: 125px;
+  transition: 0.2s;
 }
 
 .click-menu a {
+  align-items: center;
   color: #000;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 5px;
   text-align: left;
   text-decoration: none;
-  padding: 5px 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #ccc;
 }
 
 .click-menu a:last-child {
@@ -191,11 +196,11 @@ button.active {
 }
 
 .click-menu a:hover {
-  background: #f6f6f6;
+  background: #ddd;
 }
 
 .click-header {
-  background: #ddd;
+  background: #ccc;
   padding: 5px;
 }
 

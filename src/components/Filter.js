@@ -1,26 +1,23 @@
 import React, { Component } from 'react';
+import Button from './Button';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-class Search extends Component {
+class Filter extends Component {
   render() {
     return (
       <tr>
         <td colSpan="3" className="table-search">
           <div className="table-title">
-            {this.props.alteredList.length === this.props.defaultList.length
+            {this.props.alteredList && this.props.alteredList.length === this.props.defaultList.length
               ? 'Click an IP Address for more options'
               : this.props.filterBy === 'dest'
               ? 'Bytes sent to ' + this.props.filterHistory
               : 'Bytes sent from ' + this.props.filterHistory}
 
             <Link to="/">
-              <button className="table-button" onClick={this.props.reset}>
-                <FontAwesomeIcon icon="sync" /> &nbsp;Reset
-              </button>
-              <button className="table-button" onClick={() => this.props.props.history.goBack()}>
-                <FontAwesomeIcon icon="arrow-left" /> &nbsp;Back
-              </button>
+              <Button icon="arrow-left" onClick={() => this.props.props.history.goBack()} />
+              <Button icon="sync" onClick={this.props.reset} />
             </Link>
           </div>
         </td>
@@ -29,4 +26,4 @@ class Search extends Component {
   }
 }
 
-export default Search;
+export default Filter;

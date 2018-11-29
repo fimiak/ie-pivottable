@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import Button from './Button';
 import ClickMenu from './ClickMenu';
-import Search from './Search';
+import Filter from './Filter';
 import data from '.././data/traffic_bytes.json';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -10,13 +11,6 @@ class Table extends Component {
     super(props);
     this.defaultList = data.slice(0);
     this.alteredList = this.defaultList.slice(0);
-    this.x = 0;
-    this.y = 0;
-    document.addEventListener('click', e => {
-      // Finds mouse position for clickMenu
-      this.x = e.pageX;
-      this.y = e.pageY;
-    });
 
     this.orderDataCopy = () => {
       // adds order key number to list
@@ -27,9 +21,10 @@ class Table extends Component {
       this.orderDataCopy();
     };
     this.regex = /[^/]+/g;
-    this.regip = props.location.pathname !== '/' ? props.location.pathname.match(this.regex)[1] : ''; // Filters for IP in URL
-    this.regtype = props.location.pathname !== '/' ? props.location.pathname.match(this.regex)[0] : ''; // Filters for type in URL
-
+    if (props.location) {
+      this.regip = props.location.pathname !== '/' ? props.location.pathname.match(this.regex)[1] : ''; // Filters for IP in URL
+      this.regtype = props.location.pathname !== '/' ? props.location.pathname.match(this.regex)[0] : ''; // Filters for type in URL
+    }
     this.state = {
       clickmenu: false, // Tracking whether the clickmenu is open or closed
       filter: this.regip,
@@ -38,11 +33,29 @@ class Table extends Component {
       sortByte: false, // Translates to 'ascending' for true, 'descending' for false
       sortDest: false,
       sortSrc: false,
-      sortType: '' // Will be set to category of sort performed
+      sortType: '', // Will be set to category of sort performed
+      mouseX: 0, // For click menu opening position
+      mouseY: 0
     };
+
+    document.addEventListener('mousemove', e => {
+      this.mouseX = e.pageX;
+      this.mouseY = e.pageY;
+    });
 
     this.filterList = this.filterList.bind(this);
     this.clickMenu = this.clickMenu.bind(this);
+  }
+
+  sortIP(str) {
+    let arr = [];
+    for (let char of str) {
+      if (char !== '.') {
+        arr.push(char);
+      }
+    }
+    console.log(arr.join(''));
+    return arr.join('');
   }
 
   sortByBytes = () => {
@@ -59,10 +72,10 @@ class Table extends Component {
   sortByDest = () => {
     this.state.sortDest === false
       ? this.alteredList.sort(
-          (a, b) => Number(b.result['All_Traffic.dest'][1]) - Number(a.result['All_Traffic.dest'][1])
+          (a, b) => this.sortIP(b.result['All_Traffic.dest']) - this.sortIP(a.result['All_Traffic.dest'])
         )
       : this.alteredList.sort(
-          (a, b) => Number(a.result['All_Traffic.dest'][1]) - Number(b.result['All_Traffic.dest'][1])
+          (a, b) => this.sortIP(a.result['All_Traffic.dest']) - this.sortIP(b.result['All_Traffic.dest'])
         );
     this.setState(() => ({
       list: this.alteredList,
@@ -73,9 +86,11 @@ class Table extends Component {
 
   sortBySource = () => {
     this.state.sortSrc === false
-      ? this.alteredList.sort((a, b) => Number(b.result['All_Traffic.src'][1]) - Number(a.result['All_Traffic.src'][1]))
+      ? this.alteredList.sort(
+          (a, b) => this.sortIP(b.result['All_Traffic.src']) - this.sortIP(a.result['All_Traffic.src'])
+        )
       : this.alteredList.sort(
-          (a, b) => Number(a.result['All_Traffic.src'][1]) - Number(b.result['All_Traffic.src'][1])
+          (a, b) => this.sortIP(a.result['All_Traffic.src']) - this.sortIP(b.result['All_Traffic.src'])
         );
     this.setState(() => ({
       list: this.alteredList,
@@ -87,14 +102,19 @@ class Table extends Component {
   clickMenu(ip) {
     const menu = document.getElementsByClassName('click-menu')[0];
     if (ip === undefined) {
-      menu.classList.remove('click-show');
+      if (menu) {
+        menu.classList.remove('click-show');
+      } // Check that menu exists
       this.setState(prevState => ({
-        clickmenu: false
+        // Reset mouse position and clickmenu state
+        clickmenu: false,
+        mouseX: 0,
+        mouseY: 0
       }));
     } else {
-      menu.style.left = this.x - 135 + 'px';
-      menu.style.top = this.y - 10 + 'px';
-      this.state.clickmenu ? menu.classList.add('click-show') : menu.classList.remove('click-show');
+      menu.style.left = this.mouseX - 135 + 'px';
+      menu.style.top = this.mouseY + 'px';
+      menu.classList.add('click-show');
       this.setState(prevState => ({
         clickmenu: true,
         filter: ip
@@ -153,6 +173,7 @@ class Table extends Component {
 
   resetList() {
     this.alteredList = this.defaultList.slice(0);
+    document.getElementsByClassName('click-menu')[0].classList.remove('click-show'); // remove CSS from click menu
     this.setState(prevState => ({
       clickmenu: false,
       filter: '',
@@ -176,7 +197,7 @@ class Table extends Component {
         />
         <table className="table">
           <thead className="table-head">
-            <Search
+            <Filter
               alteredList={this.alteredList}
               clickmenu={this.state.clickmenu}
               reset={() => this.resetList()}
@@ -189,27 +210,24 @@ class Table extends Component {
             <tr>
               <td>
                 <span>Source IP</span>
-                <button onClick={() => this.sortBySource()}>
-                  <FontAwesomeIcon
-                    icon={this.state.sortType === 'source' && this.state.sortSrc ? 'caret-down' : 'caret-up'}
-                  />
-                </button>
+                <Button
+                  icon={this.state.sortType === 'source' && this.state.sortSrc ? 'caret-down' : 'caret-up'}
+                  onClick={() => this.sortBySource()}
+                />
               </td>
               <td>
                 <span>Destination IP</span>
-                <button onClick={() => this.sortByDest()}>
-                  <FontAwesomeIcon
-                    icon={this.state.sortType === 'dest' && this.state.sortDest ? 'caret-down' : 'caret-up'}
-                  />
-                </button>
+                <Button
+                  icon={this.state.sortType === 'dest' && this.state.sortDest ? 'caret-down' : 'caret-up'}
+                  onClick={() => this.sortByDest()}
+                />
               </td>
               <td>
                 <span>Bytes Transferred</span>
-                <button onClick={() => this.sortByBytes()}>
-                  <FontAwesomeIcon
-                    icon={this.state.sortType === 'bytes' && this.state.sortByte ? 'caret-down' : 'caret-up'}
-                  />
-                </button>
+                <Button
+                  icon={this.state.sortType === 'bytes' && this.state.sortByte ? 'caret-down' : 'caret-up'}
+                  onClick={() => this.sortByBytes()}
+                />
               </td>
             </tr>
           </thead>

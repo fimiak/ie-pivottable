@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Button from './Button';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -16,7 +17,7 @@ class ClickMenu extends Component {
           <div
             className="click-close"
             onClick={() => {
-              this.handleClick(undefined);
+              this.handleClick();
             }}>
             <FontAwesomeIcon icon="window-close" />
           </div>
@@ -27,7 +28,8 @@ class ClickMenu extends Component {
             this.props.filterList('destination');
             this.handleClick('destination');
           }}>
-          <FontAwesomeIcon icon="arrow-alt-circle-right" /> Traffic To IP
+          Traffic To IP
+          <Button icon="arrow-alt-circle-right" />
         </Link>
         <Link
           to={'/source/' + this.props.filter}
@@ -35,7 +37,8 @@ class ClickMenu extends Component {
             this.props.filterList('source');
             this.handleClick('source');
           }}>
-          <FontAwesomeIcon icon="arrow-alt-circle-right" /> Traffic From IP
+          Traffic From IP
+          <Button icon="arrow-alt-circle-right" />
         </Link>
       </div>
     );
