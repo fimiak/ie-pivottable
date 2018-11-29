@@ -1,26 +1,38 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Table from './components/Table';
 import './App.css';
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import {
+  faCaretUp,
+  faCaretDown,
+  faSync,
+  faArrowLeft,
+  faArrowAltCircleRight,
+  faWindowClose
+} from '@fortawesome/free-solid-svg-icons';
+
+library.add(fab, faCaretUp, faCaretDown, faSync, faArrowLeft, faArrowAltCircleRight, faWindowClose);
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router>
+        <div className="App">
+          <header className="App-header">
+            <h1 className="title">Insight Engines Pivot Table Exercise</h1>
+            <span>
+              By <a href="mailto:tylerjamesgreve@gmail.com">Tyler J Greve</a>
+            </span>
+          </header>
+          <div className="App-body">
+            <Route path="/:id" component={Table} />
+            <Route path="/" exact component={Table} />
+          </div>
+        </div>
+      </Router>
     );
   }
 }
